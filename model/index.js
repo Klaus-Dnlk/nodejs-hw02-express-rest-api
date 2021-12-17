@@ -8,23 +8,26 @@ const contactPath = path.join(__dirname, 'contacts.json')
 
 const readContent = async() => {
   const content = await fs.readFile(contactPath, 'utf-8')
-  const result = JSON.parse(content)
-  return result
+  return JSON.parse(content)
+}
+
+const writeContent = async(contacts) => {
+  await fs.writeFile(contactPath, JSON.stringify(contacts, null, 2))
 }
 
 const listContacts = async (req, res) => {
   const contacts = await readContent()
-  res.json({contacts, status: 200})
+  res.json({contacts})
 }
 
 const getContactById = async (req, res) => {
   const contacts = await readContent()
- const {id} = req.params
- const [contact] = contacts.filter(i => i.id ===id)
- if(!contacts){
-   return res.status(404).json({status: "Not found"})
+ const { contactId } = req.params
+ const contact = contacts.find(i => i.id.toString() === contactId)
+ if(!contact){
+   return res.status(404).json({message: "Not found"})
  }
- res.json({contact, status:200})
+ res.json( {contact} )
 }
 
 const addContact = async (req, res) => {
@@ -35,42 +38,46 @@ const addContact = async (req, res) => {
     phone 
   } = req.body
 
-  if (contacts.some(e => e.name === undefined || e.email === undefined || e.phone === undefined)) {
-    return ({status:400, message:'missing required name field'})
+  // if(name === undefined || email === undefined || phone === undefined) {
+  //   return res.json({message: "missing required name field"})
+  // }
+  const newContact = {id: crypto.randomUUID(), name, email, phone}
+
+  if(contacts.some(e => e.name === newContact.name || e.email === newContact.email || e.phone === newContact.phone)) {
+    return res.json({message: "Sorry! Contact with this name, email or phone number already exists"})
   }
-  contacts.push({
-    name,
-    email,
-    phone,
-    id: crypto.randomUUID()
-  })
-  await fs.writeFile(contactPath, JSON.stringify(contacts, null, 2))
-  res.json({status:201})
+
+  contacts.push(newContact)
+  writeContent(contacts)
+  res.status(201).json(newContact)
 }
 
 
-const removeContact = async (contactId) => {
+const removeContact = async (req, res) => {
+  const contactId = req.params.id
   const contacts = await readContent()
-  const foundContact = contacts.find(e => e.id === contactId)
-  const filteredContacts = contacts.filter(e => e.id !== contactId)
-  if (foundContact) {
-    await fs.writeFile(contactPath, JSON.stringify(filteredContacts, null, 2))
-    return filteredContacts
+  const filteredContacts = contacts.filter(e => e.id.toString() !== contactId)
+  if(!filteredContacts){
+    res.status(400).json({message: "Not found"})
+    return
   }
+  await writeContent(filteredContacts)
+  res.status(204),json({message: "contact deleted"})
 }
 
 
-const updateContact = async (contactId, body) => {
-  const contacts = await readContent()
-  const { name, email, phone } = body
-
-  contacts.forEach(contact => {
-    if (contact.id === contactId) {
-      contact.name = name,
-      contact.email = email,
-      contact.phone = phone
-    }
-  })
+const updateContact = async (req, res) => {
+  const contacts = await readContent() 
+  const contactId = req.params.id
+  const body = req.body
+  const index = contacts.findIndex(e => e.id === contactId)
+  if(index !== -1){
+    const updatedContact = {id: contactId, ...contacts[index], ...body}
+    contacts[index] = updatedContact
+    await writeContent(contacts)
+    return res.status(200).json(updatedContact)
+  }
+  return res.status(400),json({message: "Not found"})
 }
 
 module.exports = {
