@@ -2,7 +2,6 @@ const fs = require('fs/promises')
 const path = require('path')
 const crypto = require('crypto')
 
-// const contacts = require('./contacts.json')
 
 const contactPath = path.join(__dirname, 'contacts.json')
 
@@ -38,17 +37,13 @@ const addContact = async (req, res) => {
     phone 
   } = req.body
 
-  // if(name === undefined || email === undefined || phone === undefined) {
-  //   return res.json({message: "missing required name field"})
-  // }
   const newContact = {id: crypto.randomUUID(), name, email, phone}
 
   if(contacts.some(e => e.name === newContact.name || e.email === newContact.email || e.phone === newContact.phone)) {
     return res.json({message: "Sorry! Contact with this name, email or phone number already exists"})
   }
-
   contacts.push(newContact)
-  writeContent(contacts)
+  await writeContent(contacts)
   res.status(201).json(newContact)
 }
 
