@@ -22,7 +22,7 @@ const listContacts = async (req, res) => {
 const getContactById = async (req, res) => {
   const contacts = await readContent()
  const { contactId } = req.params
- const contact = contacts.find(i => i.id.toString() === contactId)
+ const contact = contacts.find(i => i.id === contactId)
  if(!contact){
    return res.status(404).json({message: "Not found"})
  }
@@ -51,8 +51,9 @@ const addContact = async (req, res) => {
 const removeContact = async (req, res) => {
   const contactId = req.params.id
   const contacts = await readContent()
-  const filteredContacts = contacts.filter(e => e.id.toString() !== contactId)
-  if(!filteredContacts){
+  const contactToDelete = contacts.find(e => e.id === contactId)
+  const filteredContacts = contacts.filter(e => e.id !== contactId)
+  if(!contactToDelete){
     res.status(400).json({message: "Not found"})
     return
   }
