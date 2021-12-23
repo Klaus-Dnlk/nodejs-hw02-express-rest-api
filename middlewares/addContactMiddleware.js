@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi'
 
 const createSchema = Joi.object({
     name: Joi.string().required(),
@@ -12,7 +12,9 @@ const updateSchema = Joi.object({
     phone: Joi.string().optional()
 }).or('name', 'email', 'phone')
 
-const validateCreate = async(req, res, next) => {
+const idSchema = Joi.object({id: Joi.string().required()})
+
+export const validateCreate = async(req, res, next) => {
     try {
         await createSchema.validateAsync(req.body)
     } catch (err) {
@@ -21,20 +23,26 @@ const validateCreate = async(req, res, next) => {
     next()
 }
 
-const validateUpdate = async(req, res, next) => {
+export const validateUpdate = async (req, res, next) => {
     try {
-        await updateSchema.validateAsync(req.body)
-    } catch (error) {
-        const [{ type }] = error.details
-        if(type === 'object.unknown') {
-            return res.status(400),json({ message: error.message })
-        }
-        return res.status(400).json({ message: 'missing field'})
+      const value = await updateSchema.validateAsync(req.body)
+    } catch (err) {
+      const [{ type }] = err.details
+      if (type === 'object.unknown') {
+        return res.status(400).json({ message: err.message })
+      }
+      return res.status(400).json({ message: err.message })
     }
     next()
-}
+  }
 
 
-module.exports = {
-    validateCreate, validateUpdate
-}
+
+export const validateId = async (req, res, next) => {
+    try {
+      const value = await idSchema.validateAsync(req.params)
+    } catch (err) {
+      return res.status(400).json({ message: `${err.message.replace(/"/g, '')}` })
+    }
+    next()
+  }
