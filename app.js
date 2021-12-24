@@ -1,6 +1,7 @@
 import express from 'express'
 import logger from 'morgan'
 import cors from 'cors'
+import { HttpCode, MESSAGE } from './lib/constans'
 
 import contactsRouter from './routes/api/contacts'
 
@@ -15,11 +16,11 @@ app.use(express.json())
 app.use('/api/contacts', contactsRouter)
 
 app.use((req, res) => {
-  res.status(404).json({ message: 'Not found' })
+  res.status(HttpCode.NOT_FOUND).json({ message: MESSAGE.NFD })
 })
 
 app.use((err, req, res, next) => {
-  res.status(500).json({ message: err.message })
+  res.status(HttpCode.INTERNAL_SERVER_ERROR).json({ message: err.message })
 })
 
 export default app
