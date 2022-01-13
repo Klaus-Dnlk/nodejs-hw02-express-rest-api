@@ -7,7 +7,7 @@ import { upload } from '../../../middlewares/upload'
 const router = express.Router()
 
 import {validateUser} from './validation'
-router.post('/registration', guard, validateUser, registration)
+router.post('/registration', validateUser, registration)
 router.post('/login', validateUser, login)
 router.post('/logout', guard, logout)
 router.post('/current', guard, currentUser)
