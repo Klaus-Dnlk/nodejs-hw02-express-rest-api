@@ -51,7 +51,7 @@ userSchema.pre('save', async function(next) {
 })
 
 userSchema.methods.isValidPassword = async function(password) {
-  return await bcrypt.compare(password, this.password)
+  return await bcryptjs.compare(password, this.password)
 }
 
 const User = model('user', userSchema)

@@ -51,4 +51,10 @@ const login = async (req, res, next) => {
       .json({status: 'OK', code: HttpCode.OK, user: { email, subscription }})
   }
 
-  export {registration, login, logout, currentUser}
+  const uploadAvatar = async (req, res, next) => {
+      res
+      .status(HttpCode.OK)
+      .json({ status: 'success', code: HttpCode.OK, message: 'Success!'})
+  }
+
+  export {registration, login, logout, currentUser, uploadAvatar}
