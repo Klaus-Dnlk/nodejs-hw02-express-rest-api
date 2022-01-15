@@ -1,9 +1,9 @@
 import { jest } from '@jest/globals'
  import { HttpCode, MESSAGE} from '../../lib/constans'
-import { registration } from './index'
+import { registration, login } from './index'
 import userService from '../../service/users/index'
 
-describe('Unit test registration', () => {
+describe('SignUp Unit-test', () => {
     let req, res, next
     beforeEach(() => {
         req = {body: {email: 'tests@test.com', password: '123345678'}}
@@ -18,6 +18,35 @@ describe('Unit test registration', () => {
         expect(userService.isUserExist).toHaveBeenCalledWith(req.body.email)
         expect(res.status).toHaveBeenCalledWith(HttpCode.CREATED)
     })
+
+    test('SignIn User', async () => {
+        userService.getUser = jest.fn(async () => ({
+            email: 'test@test.com',
+            subscription: 'starter'
+        }))
+        userService.getToken = jest.fn(async (data) => data)
+        userService.setToken = jest.fn(async (data) => data)
+
+        await login(req, res, next)
+
+        expect(userService.getUser).toHaveBeenCalledWith(
+            req.body.email, 
+            req.body.password
+            )
+        expect(res.status).toHaveBeenCalledWith(HttpCode.OK)
+    })  
+
+    test('Login with invalid credentials', async () => {
+        userService.getUser = jest.fn(async () => false);
+    
+        await login(req, res, next);
+    
+        expect(userService.getUser).toHaveBeenCalledWith(
+          req.body.email,
+          req.body.password,
+        );
+        expect(res.status).toHaveBeenCalledWith(HttpCode.UNAUTHORIZED);
+      });
 
 
     test('SignUp already exist User', async () => {
