@@ -1,5 +1,9 @@
 import { HttpCode, MESSAGE} from '../../lib/constans'
 import UsersService from '../../service/users/index'
+import {
+    UploadFileService, 
+    LocalFileStorage
+} from '../../service/file-storage'
 
 const usersService = new UsersService()
 
@@ -51,4 +55,18 @@ const login = async (req, res, next) => {
       .json({status: 'OK', code: HttpCode.OK, user: { email, subscription }})
   }
 
-  export {registration, login, logout, currentUser}
+  const uploadAvatar = async (req, res, next) => {
+      const uploadService = new UploadFileService(
+          LocalFileStorage,
+          req.file,
+          req.user
+      )
+
+      const avatarUrl = await uploadService.updateAvatar()
+      
+    res
+    .status(HttpCode.OK)
+    .json({ status: 'success', code: HttpCode.OK, data: { avatarUrl }})
+}
+
+  export {registration, login, logout, currentUser, uploadAvatar}

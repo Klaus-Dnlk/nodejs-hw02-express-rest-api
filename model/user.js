@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import bcryptjs from 'bcryptjs'
+import gravatar from 'gravatar'
 
 const { Schema, model } = mongoose
 
@@ -30,6 +31,12 @@ const userSchema = new Schema ({
           type: String,
           default: null,
         },
+        avatarURL: {
+          type: String,
+          default: function () {
+            return gravatar.url(this.email, {s: '250'}, true)
+          }
+        }
       }, 
       {versionKey: false,
         toJSON: {
@@ -51,7 +58,7 @@ userSchema.pre('save', async function(next) {
 })
 
 userSchema.methods.isValidPassword = async function(password) {
-  return await bcrypt.compare(password, this.password)
+  return await bcryptjs.compare(password, this.password)
 }
 
 const User = model('user', userSchema)

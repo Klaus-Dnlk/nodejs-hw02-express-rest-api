@@ -22,7 +22,7 @@ const updateFavoriteSchema = Joi.object({
   favorite: Joi.bool().required(),
 })
 
-// const regLimit = /\d+/
+const regLimit = /\d+/
 
 const querySchema = Joi.object({
   limit: Joi.string().pattern(regLimit).optional(),
