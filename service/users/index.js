@@ -10,10 +10,11 @@ class UsersService {
     }
 
     async create(body){
-        const { email, subscription } = await Users.create(body)
+        const { email, subscription, avatarURL } = await Users.create(body)
         return { 
             email, 
-            subscription
+            subscription,
+            avatarURL
         }
     }
 
@@ -38,4 +39,4 @@ class UsersService {
     }
 }
 
-export default UsersService
+export default new UsersService()
