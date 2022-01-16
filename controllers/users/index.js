@@ -59,6 +59,7 @@ const login = async (req, res, next) => {
   }
 
   const uploadAvatar = async (req, res, next) => {
+
       const uploadService = new UploadFileService(
           LocalFileStorage,
           req.file,
@@ -71,5 +72,6 @@ const login = async (req, res, next) => {
     .status(HttpCode.OK)
     .json({ status: 'success', code: HttpCode.OK, data: { avatarUrl }})
 }
+
 
   export {registration, login, logout, currentUser, uploadAvatar}
