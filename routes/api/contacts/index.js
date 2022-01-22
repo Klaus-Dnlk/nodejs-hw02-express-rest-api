@@ -13,19 +13,20 @@ import {
     validateId
 } from './validation'
 import guard from '../../../middlewares/guard'
+import wrapperError from '../../../middlewares/error-handler'
 
 const router = express.Router()
 
-router.get('/', guard, getContacts)
+router.get('/', guard,wrapperError(getContacts))
 
-router.get('/:id',guard,  validateId, getContactById)
+router.get('/:id',guard,  validateId, wrapperError(getContactById))
 
-router.post('/', guard, validateCreate, addContact)
+router.post('/', guard, validateCreate, wrapperError(addContact))
 
-router.delete('/:id', guard, validateId, removeContact)
+router.delete('/:id', guard, validateId, wrapperError(removeContact))
 
-router.put('/:id', guard, validateId, validateUpdate, updateContact)
+router.put('/:id', guard, validateId, validateUpdate, wrapperError(updateContact))
 
-router.patch('/:id/favorite', guard, validateId, validateUpdateFavorite, updateContact)
+router.patch('/:id/favorite', guard, validateId, validateUpdateFavorite, wrapperError(updateContact))
 
 export default router
