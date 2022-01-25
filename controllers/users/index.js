@@ -74,6 +74,7 @@ const login = async (req, res, next) => {
   }
 
   const uploadAvatar = async (req, res, next) => {
+
       const uploadService = new UploadFileService(
           LocalFileStorage,
           req.file,
@@ -86,6 +87,7 @@ const login = async (req, res, next) => {
     .status(HttpCode.OK)
     .json({ status: 'success', code: HttpCode.OK, data: { avatarUrl }})
 }
+
 
 const verifyUser = async (req, res, next) => {
     const verifyToken = req.params.verificationToken
@@ -130,3 +132,4 @@ const repeatEmailForVerifyUser = async (req, res, next) => {
 }
 
   export {registration, login, logout, currentUser, uploadAvatar, verifyUser, repeatEmailForVerifyUser}
+
