@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import {randomUUID} from 'crypto'
 import bcryptjs from 'bcryptjs'
 import gravatar from 'gravatar'
 
@@ -36,6 +37,12 @@ const userSchema = new Schema ({
           default: function () {
             return gravatar.url(this.email, {s: '250'}, true)
           }
+        },
+        isVerify: {type: Boolean, default: false},
+        verificationToken: {
+          type: String,
+          required: [true, 'Verified token is required'],
+          default: randomUUID()
         }
       }, 
       {versionKey: false,
